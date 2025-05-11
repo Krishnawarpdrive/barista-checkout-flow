@@ -1,7 +1,7 @@
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 
+// Optional now since we're removing customization
 export type CoffeeCustomization = {
   preparation: 'Light Coffee' | 'Dark Coffee';
   sweetness: 'Sugar' | 'Sugar Less' | 'No Sugar';
@@ -13,7 +13,7 @@ export type CartItem = {
   price: number;
   quantity: number;
   image: string;
-  customization?: CoffeeCustomization;
+  customization?: CoffeeCustomization; // Keep optional for backwards compatibility
 };
 
 type CartContextType = {
@@ -39,11 +39,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [couponCode, setCouponCode] = useState<string | null>(null);
 
   const addToCart = (item: CartItem) => {
-    const existingItem = items.find(
-      i => i.id === item.id && 
-      i.customization?.preparation === item.customization?.preparation &&
-      i.customization?.sweetness === item.customization?.sweetness
-    );
+    // Simplified matching logic without customization
+    const existingItem = items.find(i => i.id === item.id);
 
     if (existingItem) {
       updateQuantity(existingItem.id, existingItem.quantity + item.quantity);

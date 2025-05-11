@@ -36,14 +36,16 @@ export default function Cart() {
         <LocationBar />
         
         <div className="flex-grow flex flex-col items-center justify-center p-8 bg-coasters-cream">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Your cart is empty</h2>
-          <p className="text-gray-600 mb-8">Add some coffee to get started!</p>
-          <Button 
-            onClick={() => navigate('/')}
-            className="bg-coasters-orange hover:bg-coasters-orange/90"
-          >
-            Go to Menu
-          </Button>
+          <div className="vintage-card p-8 text-center">
+            <h2 className="text-2xl font-hackney text-coasters-green mb-4">Your cart is empty</h2>
+            <p className="text-gray-600 mb-8">Add some coffee to get started!</p>
+            <Button 
+              onClick={() => navigate('/')}
+              className="bg-coasters-orange hover:bg-coasters-orange/90 font-hackney"
+            >
+              Go to Menu
+            </Button>
+          </div>
         </div>
       </div>
     );
@@ -64,9 +66,11 @@ export default function Cart() {
         </div>
         
         {/* Coupon Section */}
-        <div className="mb-6">
+        <div className="vintage-card mb-6 relative overflow-hidden">
+          <div className="zigzag-divider absolute top-0 left-0 right-0"></div>
+          
           {couponCode ? (
-            <Alert className="bg-green-50 border-green-200 text-green-800">
+            <Alert className="bg-green-50 border-green-200 text-green-800 mt-4">
               <div className="flex justify-between items-center w-full">
                 <div className="flex items-center gap-2">
                   <Check className="h-4 w-4" />
@@ -80,7 +84,7 @@ export default function Cart() {
               </div>
             </Alert>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex gap-2 mt-4">
               <Input 
                 placeholder="Enter coupon code" 
                 value={coupon}
@@ -89,12 +93,14 @@ export default function Cart() {
               />
               <Button 
                 onClick={handleApplyCoupon}
-                className="bg-coasters-orange hover:bg-coasters-orange/90 whitespace-nowrap"
+                className="bg-coasters-orange hover:bg-coasters-orange/90 whitespace-nowrap font-hackney"
               >
                 Apply
               </Button>
             </div>
           )}
+          
+          <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
         </div>
         
         <div className="geometric-pattern h-4 w-full mb-6"></div>
@@ -110,7 +116,7 @@ export default function Cart() {
         
         <Button 
           onClick={handleCheckout}
-          className="bg-coasters-gold hover:bg-coasters-gold/90 text-black font-bold px-6 py-5"
+          className="bg-coasters-gold hover:bg-coasters-gold/90 text-black font-hackney px-6 py-5"
         >
           Pay Now
         </Button>
