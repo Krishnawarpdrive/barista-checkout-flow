@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import LocationBar from '@/components/LocationBar';
@@ -8,58 +8,43 @@ import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { ShoppingCart, Dices, Ticket } from 'lucide-react';
 import CouponDrawer from '@/components/CouponDrawer';
+import { toast } from 'sonner';
 
-// Mock data
-const coffeeProducts = [
-  {
-    id: '1',
-    name: 'Cappuccino',
-    price: 100,
-    description: 'The perfect balance of espresso, steamed milk and foam.',
-    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?q=80&w=2940&auto=format&fit=crop'
-  },
-  {
-    id: '2',
-    name: 'Latte',
-    price: 120,
-    description: 'Smooth espresso with steamed milk and a light layer of foam.',
-    image: 'https://images.unsplash.com/photo-1610632380989-680fe40816c6?q=80&w=2787&auto=format&fit=crop'
-  },
-  {
-    id: '3',
-    name: 'Espresso',
-    price: 80,
-    description: 'Strong and concentrated shot of coffee.',
-    image: 'https://images.unsplash.com/photo-1579992357154-faf4bde95b3d?q=80&w=2787&auto=format&fit=crop'
-  },
-  {
-    id: '4',
-    name: 'Mocha',
-    price: 140,
-    description: 'Espresso with chocolate and steamed milk.',
-    image: 'https://images.unsplash.com/photo-1578314675249-a6910f80239a?q=80&w=2874&auto=format&fit=crop'
-  },
-  {
-    id: '5',
-    name: 'Flat White',
-    price: 110,
-    description: 'Espresso with microfoam - steamed milk with small bubbles.',
-    image: 'https://images.unsplash.com/photo-1577968897966-3d4325b36b61?q=80&w=2864&auto=format&fit=crop'
-  },
-  {
-    id: '6',
-    name: 'Cold Brew',
-    price: 130,
-    description: 'Coffee brewed with cold water for 12-24 hours.',
-    image: 'https://images.unsplash.com/photo-1511920170033-f8396924c348?q=80&w=2787&auto=format&fit=crop'
-  },
-];
+interface Product {
+  id: string;
+  name: string;
+  price: number;
+  description?: string;
+  image?: string;
+}
 
 export default function Home() {
   const { isAuthenticated, user } = useAuth();
   const { items } = useCart();
   const navigate = useNavigate();
   const [showCouponDrawer, setShowCouponDrawer] = useState(false);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        setIsLoading(true);
+        setError(null);
+        const res = await fetch('/api/v1/get_product/');
+        if (!res.ok) throw new Error('Failed to fetch products');
+        const data = await res.json();
+        setProducts(data);
+      } catch (err) {
+        setError('Failed to load products. Please try again later.');
+        toast.error('Failed to load products');
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
   
   const totalCartItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
@@ -112,11 +97,37 @@ export default function Home() {
             <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            {coffeeProducts.map((coffee) => (
-              <CoffeeCard key={coffee.id} coffee={coffee} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="flex justify-center items-center py-12">
+              <div className="text-center">
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-coasters-green mx-auto mb-4"></div>
+                <p className="text-coasters-green">Loading products...</p>
+              </div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-12">
+              <p className="text-red-500 mb-4">{error}</p>
+              <button 
+                onClick={() => window.location.reload()}
+                className="bg-coasters-green text-white px-4 py-2 rounded-lg hover:bg-coasters-green/90"
+              >
+                Try Again
+              </button>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              {products.map((coffee) => (
+                <CoffeeCard 
+                  key={coffee.id} 
+                  coffee={{
+                    ...coffee,
+                    description: coffee.description || '',
+                    image: coffee.image || 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?q=80&w=2940&auto=format&fit=crop'
+                  }} 
+                />
+              ))}
+            </div>
+          )}
         </div>
       </main>
       
