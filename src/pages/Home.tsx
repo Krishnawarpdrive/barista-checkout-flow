@@ -7,6 +7,7 @@ import CoffeeCard from '@/components/CoffeeCard';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
+import { ShoppingCart } from 'lucide-react';
 
 // Mock data
 const coffeeProducts = [
@@ -60,13 +61,14 @@ export default function Home() {
   const navigate = useNavigate();
   
   const totalCartItems = items.reduce((sum, item) => sum + item.quantity, 0);
+  const cartTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
   
   return (
     <div className="flex flex-col min-h-screen bg-coasters-cream">
       <Header />
       <LocationBar />
       
-      <main className="flex-grow pb-20">
+      <main className="flex-grow pb-24">
         <div className="p-4">
           <h2 className="text-2xl font-hackney text-coasters-green mb-6">
             {isAuthenticated 
@@ -83,17 +85,25 @@ export default function Home() {
       </main>
       
       {totalCartItems > 0 && (
-        <div className="fixed bottom-0 left-0 right-0 bg-coasters-green p-4 flex items-center justify-between">
-          <div className="text-white">
-            <p className="text-sm">Total Price</p>
-            <p className="text-xl font-bold">₹{items.reduce((sum, item) => sum + (item.price * item.quantity), 0)}</p>
+        <div className="fixed bottom-0 left-0 right-0 bg-coasters-green p-4 flex items-center justify-between shadow-lg border-t-2 border-coasters-gold animate-fade-in">
+          <div className="flex items-center gap-3">
+            <div className="bg-coasters-gold rounded-full w-10 h-10 flex items-center justify-center text-coasters-green font-bold animate-bounce-subtle">
+              {totalCartItems}
+            </div>
+            <div className="text-white">
+              <p className="text-sm">Total Price</p>
+              <p className="text-xl font-bold">₹{cartTotal}</p>
+            </div>
           </div>
           
           <Button 
             onClick={() => navigate('/cart')}
-            className="bg-coasters-gold hover:bg-coasters-gold/90 text-black font-bold px-6 py-5"
+            className="bg-coasters-gold hover:bg-coasters-gold/90 text-coasters-green font-bold px-6 py-5 group transform transition-all duration-300 hover:-translate-y-0.5"
           >
-            Pay Now
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="group-hover:animate-bounce-subtle" />
+              <span>Pay Now</span>
+            </div>
           </Button>
         </div>
       )}
