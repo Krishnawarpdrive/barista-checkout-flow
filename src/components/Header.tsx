@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Menu, Bell } from 'lucide-react';
+import { Menu, Bell, User, ListOrdered, Share2 } from 'lucide-react';
 import { useAuth } from '@/context/AuthContext';
 
 export default function Header() {
@@ -48,9 +48,46 @@ export default function Header() {
                     navigate('/');
                     setIsOpen(false);
                   }}
-                  className="text-white hover:text-coasters-gold w-full text-left py-2"
+                  className="text-white hover:text-coasters-gold w-full text-left py-2 flex items-center gap-2"
                 >
+                  <Menu size={18} />
                   Home
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => {
+                    navigate('/profile');
+                    setIsOpen(false);
+                  }}
+                  className="text-white hover:text-coasters-gold w-full text-left py-2 flex items-center gap-2"
+                >
+                  <User size={18} />
+                  Profile
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => {
+                    navigate('/orders');
+                    setIsOpen(false);
+                  }}
+                  className="text-white hover:text-coasters-gold w-full text-left py-2 flex items-center gap-2"
+                >
+                  <ListOrdered size={18} />
+                  Orders
+                </button>
+              </li>
+              <li>
+                <button 
+                  onClick={() => {
+                    navigate('/refer');
+                    setIsOpen(false);
+                  }}
+                  className="text-white hover:text-coasters-gold w-full text-left py-2 flex items-center gap-2"
+                >
+                  <Share2 size={18} />
+                  Refer & Earn
                 </button>
               </li>
               <li>

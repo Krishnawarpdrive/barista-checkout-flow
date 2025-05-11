@@ -39,33 +39,48 @@ export default function CoffeeCard({ coffee }: CoffeeCardProps) {
 
   return (
     <>
-      <div className="rounded-lg bg-white overflow-hidden">
-        <div className="w-full h-36">
-          <img 
-            src={coffee.image} 
-            alt={coffee.name} 
-            className="w-full h-full object-cover" 
-          />
-        </div>
+      <div className="relative rounded-lg bg-white overflow-hidden mb-4">
+        {/* Zigzag top edge */}
+        <div className="zigzag-divider absolute top-0 left-0 right-0"></div>
         
-        <div className="p-3">
-          <div className="flex justify-between items-start mb-2">
-            <div>
+        <div className="flex pt-4 px-3">
+          <div className="flex items-start flex-1 gap-3">
+            <div className="flex items-center">
+              <input 
+                type="radio" 
+                className="w-4 h-4 accent-coasters-green" 
+                checked 
+                readOnly 
+              />
+            </div>
+            <div className="flex-1">
               <h3 className="font-medium text-lg">{coffee.name}</h3>
               <p className="font-bold">₹{coffee.price}</p>
+              <p className="text-sm text-gray-600 line-clamp-2 mt-1">{coffee.description}</p>
+              <button className="text-sm text-coasters-orange mt-1">Read More</button>
             </div>
-            
-            <Button 
-              onClick={() => setShowCustomize(true)}
-              className="bg-coasters-orange hover:bg-coasters-orange/90 text-white px-6"
-            >
-              ADD
-            </Button>
           </div>
           
-          <p className="text-sm text-gray-600 line-clamp-2">{coffee.description}</p>
-          <button className="text-sm text-coasters-orange mt-1">Read More</button>
+          <div className="w-24 h-24 flex-shrink-0 rounded-md overflow-hidden">
+            <img 
+              src={coffee.image} 
+              alt={coffee.name} 
+              className="w-full h-full object-cover" 
+            />
+          </div>
         </div>
+        
+        <div className="p-2 flex justify-end">
+          <Button 
+            onClick={() => setShowCustomize(true)}
+            className="bg-coasters-orange hover:bg-coasters-orange/90 text-white px-6"
+          >
+            ADD
+          </Button>
+        </div>
+        
+        {/* Zigzag bottom edge */}
+        <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
       </div>
       
       <Dialog open={showCustomize} onOpenChange={setShowCustomize}>
@@ -75,7 +90,10 @@ export default function CoffeeCard({ coffee }: CoffeeCardProps) {
           </DialogHeader>
           
           <div className="space-y-6 py-4">
-            <div className="bg-white rounded-lg p-4 text-black">
+            <div className="bg-white rounded-lg p-4 text-black relative overflow-hidden">
+              {/* Zigzag edge for the cards */}
+              <div className="zigzag-divider absolute top-0 left-0 right-0 opacity-50"></div>
+              
               <h3 className="font-bold text-lg mb-2">Select Preparation style</h3>
               <p className="text-amber-600 text-sm mb-4">Required - Select any 1 option</p>
               
@@ -100,9 +118,14 @@ export default function CoffeeCard({ coffee }: CoffeeCardProps) {
                   <span>Dark Coffee</span>
                 </div>
               </div>
+              
+              <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0 opacity-50"></div>
             </div>
             
-            <div className="bg-white rounded-lg p-4 text-black">
+            <div className="bg-white rounded-lg p-4 text-black relative overflow-hidden">
+              {/* Zigzag edge for the cards */}
+              <div className="zigzag-divider absolute top-0 left-0 right-0 opacity-50"></div>
+              
               <h3 className="font-bold text-lg mb-2">Select Your Taste</h3>
               <p className="text-amber-600 text-sm mb-4">Required - Select any 1 option</p>
               
@@ -137,6 +160,8 @@ export default function CoffeeCard({ coffee }: CoffeeCardProps) {
                   <span>No Sugar</span>
                 </div>
               </div>
+              
+              <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0 opacity-50"></div>
             </div>
           </div>
           

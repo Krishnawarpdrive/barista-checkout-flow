@@ -12,6 +12,9 @@ import Home from "./pages/Home";
 import Cart from "./pages/Cart";
 import OrderSuccess from "./pages/OrderSuccess";
 import NotFound from "./pages/NotFound";
+import Profile from "./pages/Profile";
+import Orders from "./pages/Orders";
+import Refer from "./pages/Refer";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -31,6 +34,9 @@ const AppRoutes = () => (
     <Route path="/login" element={<Login />} />
     <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
     <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
+    <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
+    <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
+    <Route path="/refer" element={<ProtectedRoute><Refer /></ProtectedRoute>} />
     <Route path="/order-success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
