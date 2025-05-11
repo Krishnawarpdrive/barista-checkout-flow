@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -7,7 +6,8 @@ import CoffeeCard from '@/components/CoffeeCard';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Dices } from 'lucide-react';
+import { ShoppingCart, Dices, Ticket } from 'lucide-react';
+import CouponDrawer from '@/components/CouponDrawer';
 
 // Mock data
 const coffeeProducts = [
@@ -59,9 +59,20 @@ export default function Home() {
   const { isAuthenticated, user } = useAuth();
   const { items } = useCart();
   const navigate = useNavigate();
+  const [showCouponDrawer, setShowCouponDrawer] = useState(false);
   
   const totalCartItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+  
+  const handleCheckout = () => {
+    // If user is logged in, go to cart page
+    if (isAuthenticated) {
+      navigate('/cart');
+    } else {
+      // Otherwise go to login page
+      navigate('/login');
+    }
+  };
   
   return (
     <div className="flex flex-col min-h-screen bg-coasters-cream">
@@ -121,17 +132,33 @@ export default function Home() {
             </div>
           </div>
           
-          <Button 
-            onClick={() => navigate('/cart')}
-            className="bg-coasters-gold hover:bg-coasters-gold/90 text-coasters-green font-bold px-6 py-5 group transform transition-all duration-300 hover:-translate-y-0.5"
-          >
-            <div className="flex items-center gap-2">
-              <ShoppingCart className="group-hover:animate-bounce-subtle" />
-              <span>Pay Now</span>
-            </div>
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              onClick={() => setShowCouponDrawer(true)}
+              variant="outline"
+              className="bg-transparent border-coasters-gold/50 text-coasters-gold hover:bg-coasters-gold/10 hover:text-white"
+            >
+              <Ticket className="mr-1" />
+              Apply Coupon
+            </Button>
+            
+            <Button 
+              onClick={handleCheckout}
+              className="bg-coasters-gold hover:bg-coasters-gold/90 text-coasters-green font-bold px-6 py-5 group transform transition-all duration-300 hover:-translate-y-0.5"
+            >
+              <div className="flex items-center gap-2">
+                <ShoppingCart className="group-hover:animate-bounce-subtle" />
+                <span>Checkout</span>
+              </div>
+            </Button>
+          </div>
         </div>
       )}
+      
+      <CouponDrawer 
+        open={showCouponDrawer} 
+        onClose={() => setShowCouponDrawer(false)} 
+      />
     </div>
   );
 }
