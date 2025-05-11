@@ -10,12 +10,12 @@ import { CartProvider } from "@/context/CartContext";
 import Login from "./pages/Login";
 import Home from "./pages/Home";
 import Cart from "./pages/Cart";
-import DiceGame from "./pages/DiceGame";
 import OrderSuccess from "./pages/OrderSuccess";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
 import Refer from "./pages/Refer";
+import DiceGame from "./pages/DiceGame";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -35,11 +35,11 @@ const AppRoutes = () => (
     <Route path="/login" element={<Login />} />
     <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
     <Route path="/cart" element={<ProtectedRoute><Cart /></ProtectedRoute>} />
-    <Route path="/dice-game" element={<ProtectedRoute><DiceGame /></ProtectedRoute>} />
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
     <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
     <Route path="/refer" element={<ProtectedRoute><Refer /></ProtectedRoute>} />
     <Route path="/order-success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
+    <Route path="/dice-game" element={<ProtectedRoute><DiceGame /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

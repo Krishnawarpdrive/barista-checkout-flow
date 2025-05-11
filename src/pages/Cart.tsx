@@ -3,23 +3,31 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import LocationBar from '@/components/LocationBar';
-import CartItemCard from '@/components/CartItemCard';
 import PaymentSummary from '@/components/PaymentSummary';
+import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Check, X, Dices } from 'lucide-react';
+import CouponDrawer from '@/components/CouponDrawer';
+
+// Component imports
+import EmptyCartState from '@/components/cart/EmptyCartState';
+import CartCouponSection from '@/components/cart/CartCouponSection';
+import CartDiceGameCta from '@/components/cart/CartDiceGameCta';
+import CartLoginDrawer from '@/components/cart/CartLoginDrawer';
+import CartCheckoutFooter from '@/components/cart/CartCheckoutFooter';
+import CartItemsSection from '@/components/cart/CartItemsSection';
 
 export default function Cart() {
-  const { items, applyCoupon, couponCode, removeCoupon, clearCart, getTotal } = useCart();
-  const [coupon, setCoupon] = useState('');
+  const { items, clearCart } = useCart();
+  const { isAuthenticated } = useAuth();
+  const [showLoginDrawer, setShowLoginDrawer] = useState(false);
+  const [showCouponDrawer, setShowCouponDrawer] = useState(false);
   const navigate = useNavigate();
-
-  const handleApplyCoupon = () => {
-    if (coupon) {
-      applyCoupon(coupon);
-      setCoupon('');
+  
+  const handleProceedToPayment = () => {
+    if (isAuthenticated) {
+      handleCheckout();
+    } else {
+      setShowLoginDrawer(true);
     }
   };
   
@@ -28,9 +36,15 @@ export default function Cart() {
     clearCart();
     navigate('/order-success');
   };
-
+  
+  const handleGuestCheckout = () => {
+    // Skip login and proceed to checkout as guest
+    handleCheckout();
+  };
+  
   const handlePlayDice = () => {
-    navigate('/dice-game');
+    // Navigate to dice game with cart items for pricing
+    navigate('/dice-game', { state: { items } });
   };
   
   if (items.length === 0) {
@@ -38,19 +52,7 @@ export default function Cart() {
       <div className="flex flex-col min-h-screen">
         <Header />
         <LocationBar />
-        
-        <div className="flex-grow flex flex-col items-center justify-center p-8 bg-coasters-cream">
-          <div className="vintage-card p-8 text-center">
-            <h2 className="text-2xl font-hackney text-coasters-green mb-4">Your cart is empty</h2>
-            <p className="text-gray-600 mb-8">Add some coffee to get started!</p>
-            <Button 
-              onClick={() => navigate('/')}
-              className="bg-coasters-orange hover:bg-coasters-orange/90 font-hackney"
-            >
-              Go to Menu
-            </Button>
-          </div>
-        </div>
+        <EmptyCartState />
       </div>
     );
   }
@@ -61,92 +63,34 @@ export default function Cart() {
       <LocationBar />
       
       <main className="flex-grow p-4 pb-24">
-        <h2 className="text-2xl font-hackney text-coasters-green mb-6">YOUR CART</h2>
-        
-        <div className="space-y-4 mb-6">
-          {items.map((item) => (
-            <CartItemCard key={item.id} item={item} />
-          ))}
-        </div>
+        <CartItemsSection />
         
         {/* Coupon Section */}
-        <div className="vintage-card mb-6 relative overflow-hidden">
-          <div className="zigzag-divider absolute top-0 left-0 right-0"></div>
-          
-          {couponCode ? (
-            <Alert className="bg-green-50 border-green-200 text-green-800 mt-4">
-              <div className="flex justify-between items-center w-full">
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4" />
-                  <AlertDescription>
-                    <strong>Offer applied successfully!</strong>
-                  </AlertDescription>
-                </div>
-                <button onClick={removeCoupon} className="text-gray-500">
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-            </Alert>
-          ) : (
-            <div className="flex gap-2 mt-4">
-              <Input 
-                placeholder="Enter coupon code" 
-                value={coupon}
-                onChange={(e) => setCoupon(e.target.value)}
-                className="flex-grow"
-              />
-              <Button 
-                onClick={handleApplyCoupon}
-                className="bg-coasters-orange hover:bg-coasters-orange/90 whitespace-nowrap font-hackney"
-              >
-                Apply
-              </Button>
-            </div>
-          )}
-          
-          <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
-        </div>
+        <CartCouponSection onOpenCouponDrawer={() => setShowCouponDrawer(true)} />
         
         {/* Play Dice Game CTA */}
-        <div className="vintage-card mb-6 bg-coasters-green p-4 relative overflow-hidden">
-          <div className="zigzag-divider absolute top-0 left-0 right-0"></div>
-          
-          <div className="flex justify-between items-center">
-            <div>
-              <h3 className="font-hackney text-coasters-gold text-xl mb-2">PLAY DICE & WIN FREE COFFEE!</h3>
-              <p className="text-white text-sm">Play our dice game for ₹25 per roll and win free coffee</p>
-            </div>
-            <Button 
-              onClick={handlePlayDice}
-              variant="gold"
-              className="flex items-center gap-2"
-            >
-              <Dices className="h-5 w-5" />
-              Play Dice
-            </Button>
-          </div>
-          
-          <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
-        </div>
+        <CartDiceGameCta onPlayDice={handlePlayDice} />
         
         <div className="geometric-pattern h-4 w-full mb-6"></div>
         
         <PaymentSummary />
       </main>
       
-      <div className="fixed bottom-0 left-0 right-0 bg-coasters-green p-4 flex items-center justify-between">
-        <div className="text-white">
-          <p className="text-sm">Total Price</p>
-          <p className="text-xl font-bold">₹{getTotal()}</p>
-        </div>
-        
-        <Button 
-          onClick={handleCheckout}
-          className="bg-coasters-gold hover:bg-coasters-gold/90 text-black font-hackney px-6 py-5"
-        >
-          Pay Now
-        </Button>
-      </div>
+      {/* Checkout Footer */}
+      <CartCheckoutFooter onProceed={handleProceedToPayment} />
+      
+      {/* Login Options Drawer */}
+      <CartLoginDrawer 
+        open={showLoginDrawer} 
+        onClose={() => setShowLoginDrawer(false)}
+        onGuestCheckout={handleGuestCheckout}
+      />
+      
+      {/* Coupon Drawer */}
+      <CouponDrawer 
+        open={showCouponDrawer} 
+        onClose={() => setShowCouponDrawer(false)} 
+      />
     </div>
   );
 }
