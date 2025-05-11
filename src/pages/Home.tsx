@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -6,8 +7,7 @@ import CoffeeCard from '@/components/CoffeeCard';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Dices, Ticket } from 'lucide-react';
-import CouponDrawer from '@/components/CouponDrawer';
+import { ShoppingCart } from 'lucide-react';
 
 // Mock data
 const coffeeProducts = [
@@ -59,20 +59,9 @@ export default function Home() {
   const { isAuthenticated, user } = useAuth();
   const { items } = useCart();
   const navigate = useNavigate();
-  const [showCouponDrawer, setShowCouponDrawer] = useState(false);
   
   const totalCartItems = items.reduce((sum, item) => sum + item.quantity, 0);
   const cartTotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  
-  const handleCheckout = () => {
-    // If user is logged in, go to cart page
-    if (isAuthenticated) {
-      navigate('/cart');
-    } else {
-      // Otherwise go to login page
-      navigate('/login');
-    }
-  };
   
   return (
     <div className="flex flex-col min-h-screen bg-coasters-cream">
@@ -86,31 +75,6 @@ export default function Home() {
               ? `HELLO ${user?.name.toUpperCase()}, LET'S ORDER HAPPINESS!` 
               : "DISCOVER OUR COFFEE"}
           </h2>
-          
-          {/* Dice Game Banner */}
-          <div className="mb-6 bg-coasters-gold rounded-lg p-4 border-2 border-coasters-green/30 shadow-md relative overflow-hidden animate-fade-in">
-            <div className="flex items-center justify-between">
-              <div>
-                <h3 className="font-hackney text-xl text-coasters-green mb-1">TRY YOUR LUCK!</h3>
-                <p className="text-coasters-green/80 text-sm mb-2">Play our dice game and win free coffee</p>
-                <Button 
-                  onClick={() => navigate('/dice-game')}
-                  variant="secondary"
-                  size="sm"
-                  className="group"
-                >
-                  <Dices className="mr-1 group-hover:animate-bounce-subtle" />
-                  Play Now
-                </Button>
-              </div>
-              <div className="hidden sm:block">
-                <Dices size={60} className="text-coasters-green opacity-80 animate-bounce-subtle" />
-              </div>
-            </div>
-            
-            <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-20 translate-x-20"></div>
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
-          </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             {coffeeProducts.map((coffee) => (
@@ -132,33 +96,17 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Button 
-              onClick={() => setShowCouponDrawer(true)}
-              variant="outline"
-              className="bg-transparent border-coasters-gold/50 text-coasters-gold hover:bg-coasters-gold/10 hover:text-white"
-            >
-              <Ticket className="mr-1" />
-              Apply Coupon
-            </Button>
-            
-            <Button 
-              onClick={handleCheckout}
-              className="bg-coasters-gold hover:bg-coasters-gold/90 text-coasters-green font-bold px-6 py-5 group transform transition-all duration-300 hover:-translate-y-0.5"
-            >
-              <div className="flex items-center gap-2">
-                <ShoppingCart className="group-hover:animate-bounce-subtle" />
-                <span>Checkout</span>
-              </div>
-            </Button>
-          </div>
+          <Button 
+            onClick={() => navigate('/cart')}
+            className="bg-coasters-gold hover:bg-coasters-gold/90 text-coasters-green font-bold px-6 py-5 group transform transition-all duration-300 hover:-translate-y-0.5"
+          >
+            <div className="flex items-center gap-2">
+              <ShoppingCart className="group-hover:animate-bounce-subtle" />
+              <span>Pay Now</span>
+            </div>
+          </Button>
         </div>
       )}
-      
-      <CouponDrawer 
-        open={showCouponDrawer} 
-        onClose={() => setShowCouponDrawer(false)} 
-      />
     </div>
   );
 }
