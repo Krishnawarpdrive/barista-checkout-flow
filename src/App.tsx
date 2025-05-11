@@ -15,7 +15,6 @@ import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import Orders from "./pages/Orders";
 import Refer from "./pages/Refer";
-import DiceGame from "./pages/DiceGame";
 
 // Protected route component
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
@@ -39,7 +38,6 @@ const AppRoutes = () => (
     <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
     <Route path="/refer" element={<ProtectedRoute><Refer /></ProtectedRoute>} />
     <Route path="/order-success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
-    <Route path="/dice-game" element={<ProtectedRoute><DiceGame /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

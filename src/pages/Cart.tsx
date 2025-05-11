@@ -12,7 +12,6 @@ import CouponDrawer from '@/components/CouponDrawer';
 // New component imports
 import EmptyCartState from '@/components/cart/EmptyCartState';
 import CartCouponSection from '@/components/cart/CartCouponSection';
-import CartDiceGameCta from '@/components/cart/CartDiceGameCta';
 import CartLoginDrawer from '@/components/cart/CartLoginDrawer';
 import CartCheckoutFooter from '@/components/cart/CartCheckoutFooter';
 
@@ -42,11 +41,6 @@ export default function Cart() {
     handleCheckout();
   };
   
-  const handlePlayDice = () => {
-    // Navigate to dice game with cart items for pricing
-    navigate('/dice-game', { state: { items } });
-  };
-  
   if (items.length === 0) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -73,9 +67,6 @@ export default function Cart() {
         
         {/* Coupon Section */}
         <CartCouponSection onOpenCouponDrawer={() => setShowCouponDrawer(true)} />
-        
-        {/* Play Dice Game CTA */}
-        <CartDiceGameCta onPlayDice={handlePlayDice} />
         
         <div className="geometric-pattern h-4 w-full mb-6"></div>
         
