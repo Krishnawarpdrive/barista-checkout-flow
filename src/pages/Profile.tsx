@@ -44,7 +44,7 @@ export default function Profile() {
               <div className="w-full mt-6">
                 <div className="flex justify-between border-b border-gray-200 py-3">
                   <span className="text-gray-500">Phone</span>
-                  <span className="font-medium">+91 9876543210</span>
+                  <span className="font-medium">{user?.phone || '+91 9876543210'}</span>
                 </div>
                 
                 <div className="flex justify-between border-b border-gray-200 py-3">

@@ -11,8 +11,8 @@ export default function ReferCard() {
   const [isCopied, setIsCopied] = useState(false);
   const { toast } = useToast();
   
-  // Generate a unique referral code based on the user ID
-  const referralCode = user ? `CSTR${user.id.slice(0, 6).toUpperCase()}` : 'CSTR123456';
+  // Generate a unique referral code based on the user ID or use a default
+  const referralCode = user?.id ? `CSTR${user.id.slice(0, 6).toUpperCase()}` : 'CSTR123456';
   const referralLink = `https://coasters.app/refer?code=${referralCode}`;
   
   const handleCopy = () => {

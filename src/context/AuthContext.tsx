@@ -13,6 +13,8 @@ type AuthContextType = {
 type User = {
   name: string;
   phone: string;
+  id: string;
+  email?: string;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -33,7 +35,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (otp.length === 4 && pendingPhone) {
       setUser({
         name: "Coffee Lover",
-        phone: pendingPhone
+        phone: pendingPhone,
+        id: `user-${Date.now().toString(36)}`, // Generate a simple pseudo ID
+        email: "user@example.com" // Add a default email
       });
       setIsAuthenticated(true);
       setPendingPhone(null);
