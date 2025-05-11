@@ -15,6 +15,8 @@ import CartCouponSection from '@/components/cart/CartCouponSection';
 import CartLoginDrawer from '@/components/cart/CartLoginDrawer';
 import CartCheckoutFooter from '@/components/cart/CartCheckoutFooter';
 
+import CartDiceGameCta from '@/components/cart/CartDiceGameCta';
+
 export default function Cart() {
   const { items, clearCart, getSubtotal, getTax, getTotal, discount, couponCode } = useCart();
   const { isAuthenticated, user } = useAuth();
@@ -155,6 +157,9 @@ export default function Cart() {
         
         <PaymentSummary />
       </main>
+      
+      {/* Play Dice CTA */}
+      <CartDiceGameCta />
       
       {/* Checkout Footer */}
       <CartCheckoutFooter onProceed={handleProceedToPayment} isLoading={isSubmitting} />

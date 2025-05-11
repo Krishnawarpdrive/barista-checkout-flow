@@ -1,33 +1,27 @@
 
-import { Button } from '@/components/ui/button';
 import { Dices } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { useNavigate } from 'react-router-dom';
 
-interface CartDiceGameCtaProps {
-  onPlayDice: () => void;
-}
-
-export default function CartDiceGameCta({ onPlayDice }: CartDiceGameCtaProps) {
+export default function CartDiceGameCta() {
+  const navigate = useNavigate();
+  
+  const handlePlayDice = () => {
+    navigate('/play-dice');
+  };
+  
   return (
-    <div className="vintage-card mb-6 relative overflow-hidden">
-      <div className="zigzag-divider absolute top-0 left-0 right-0"></div>
-      
-      <div className="flex items-center bg-coasters-green/10 p-3 rounded-md">
-        <div className="mr-4">
-          <Dices className="h-12 w-12 text-coasters-orange animate-pulse" />
+    <div className="fixed bottom-24 right-4 z-10 animate-bounce-subtle">
+      <Button 
+        onClick={handlePlayDice}
+        className="bg-coasters-green text-coasters-gold hover:bg-coasters-green/90 shadow-lg flex items-center px-4 py-6 rounded-full"
+      >
+        <Dices className="mr-2 h-5 w-5" />
+        <div className="flex flex-col items-start">
+          <span className="font-hackney text-base leading-tight">PLAY DICE</span>
+          <span className="text-xs leading-tight">Win free coffee!</span>
         </div>
-        <div className="flex-grow">
-          <h3 className="text-lg font-hackney text-coasters-green">PLAY DICE GAME</h3>
-          <p className="text-sm text-gray-600">Roll the dice and win free coffee!</p>
-        </div>
-        <Button 
-          onClick={onPlayDice}
-          className="bg-coasters-green hover:bg-coasters-green/90 whitespace-nowrap font-hackney"
-        >
-          Play Now
-        </Button>
-      </div>
-      
-      <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
+      </Button>
     </div>
   );
 }

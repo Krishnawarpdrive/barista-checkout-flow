@@ -38,8 +38,8 @@ const AppRoutes = () => (
     <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
     <Route path="/orders" element={<ProtectedRoute><Orders /></ProtectedRoute>} />
     <Route path="/refer" element={<ProtectedRoute><Refer /></ProtectedRoute>} />
+    <Route path="/play-dice" element={<ProtectedRoute><DiceGame /></ProtectedRoute>} />
     <Route path="/order-success" element={<ProtectedRoute><OrderSuccess /></ProtectedRoute>} />
-    <Route path="/dice-game" element={<ProtectedRoute><DiceGame /></ProtectedRoute>} />
     <Route path="*" element={<NotFound />} />
   </Routes>
 );

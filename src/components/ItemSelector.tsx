@@ -1,7 +1,14 @@
 
 import { useState } from 'react';
-import { GameItem } from '@/pages/DiceGame';
 import { Card, CardContent } from '@/components/ui/card';
+
+// Define the GameItem type directly since we removed the DiceGame.tsx file
+export interface GameItem {
+  id: string;
+  name: string;
+  image: string;
+  price: number;
+}
 
 interface ItemSelectorProps {
   items: GameItem[];

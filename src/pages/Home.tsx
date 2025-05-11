@@ -6,7 +6,7 @@ import CoffeeCard from '@/components/CoffeeCard';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart, Dices, Ticket } from 'lucide-react';
+import { ShoppingCart, Ticket } from 'lucide-react';
 import CouponDrawer from '@/components/CouponDrawer';
 import { toast } from 'sonner';
 
@@ -128,6 +128,7 @@ export default function Home() {
               ))}
             </div>
           )}
+
         </div>
       </main>
       

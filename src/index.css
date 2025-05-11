@@ -111,4 +111,41 @@
       #EFEFDF 20px
     );
   }
+  
+  /* Confetti animation */
+  .confetti-container {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+  }
+  
+  .confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    opacity: 0;
+    transform: translateY(0) rotate(0);
+    animation: confetti-fall 5s ease-in-out infinite;
+  }
+  
+  @keyframes confetti-fall {
+    0% {
+      opacity: 0;
+      transform: translateY(-100vh) rotate(0);
+    }
+    10% {
+      opacity: 1;
+    }
+    90% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(100vh) rotate(720deg);
+    }
+  }
 }

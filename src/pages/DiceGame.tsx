@@ -1,254 +1,275 @@
 
-import { useState, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Dices, ArrowRight } from 'lucide-react';
 import Header from '@/components/Header';
-import { useAuth } from '@/context/AuthContext';
+import { Button } from '@/components/ui/button';
 import { useCart } from '@/context/CartContext';
-import { toast } from 'sonner';
+import ItemSelector from '@/components/ItemSelector';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import DiceGameRoll from '@/components/game/DiceGameRoll';
+import DiceGameResult from '@/components/game/DiceGameResult';
 
-// Component imports
-import ItemSelectionSection from '@/components/dice-game/ItemSelectionSection';
-import PaymentSection from '@/components/dice-game/PaymentSection';
-import NumberSelectionSection from '@/components/dice-game/NumberSelectionSection';
-import DiceRollSection from '@/components/dice-game/DiceRollSection';
-import MultipleRollsSection from '@/components/dice-game/MultipleRollsSection';
-import ResultsSection from '@/components/dice-game/ResultsSection';
-import ProgressIndicator from '@/components/dice-game/ProgressIndicator';
-import FooterIndicator from '@/components/dice-game/FooterIndicator';
-
-// Game states to manage the flow
-export type GameState = 'item_selection' | 'payment' | 'select_number' | 'roll_dice' | 'multiple_rolls' | 'result';
-
-// Item type definition
-export type GameItem = {
+export interface GameItem {
   id: string;
   name: string;
-  price: number;
   image: string;
-};
+  price: number;
+}
 
-// Sample items available for the game
+type GameStage = 'selection' | 'payment' | 'roll' | 'result';
+
 const gameItems: GameItem[] = [
   {
     id: '1',
     name: 'Cappuccino',
-    price: 25,
-    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?q=80&w=2940&auto=format&fit=crop'
+    image: 'https://images.unsplash.com/photo-1572442388796-11668a67e53d?w=400&h=300&fit=crop',
+    price: 25
   },
   {
     id: '2',
-    name: 'Espresso',
-    price: 25,
-    image: 'https://images.unsplash.com/photo-1579992357154-faf4bde95b3d?q=80&w=2787&auto=format&fit=crop'
+    name: 'Croissant',
+    image: 'https://images.unsplash.com/photo-1592985684811-8f22c3c34555?w=400&h=300&fit=crop',
+    price: 25
   },
   {
     id: '3',
-    name: 'Latte',
-    price: 25,
-    image: 'https://images.unsplash.com/photo-1610632380989-680fe40816c6?q=80&w=2787&auto=format&fit=crop'
+    name: 'Filter Coffee',
+    image: 'https://images.unsplash.com/photo-1610889556528-9a770e32642f?w=400&h=300&fit=crop',
+    price: 25
   },
   {
     id: '4',
-    name: 'Croissant',
-    price: 25,
-    image: 'https://images.unsplash.com/photo-1555507036-ab1f4038808a?q=80&w=2526&auto=format&fit=crop'
-  },
+    name: 'Cookies',
+    image: 'https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=400&h=300&fit=crop',
+    price: 25
+  }
 ];
-
-export type RollResult = {
-  item: GameItem;
-  selected: number;
-  rolled: number;
-  win: boolean;
-};
 
 export default function DiceGame() {
   const navigate = useNavigate();
-  const location = useLocation();
-  const { isAuthenticated } = useAuth();
   const { applyCoupon } = useCart();
-  
-  const [gameState, setGameState] = useState<GameState>('item_selection');
-  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [selectedItems, setSelectedItems] = useState<GameItem[]>([]);
-  const [currentItemIndex, setCurrentItemIndex] = useState(0);
+  const [stage, setStage] = useState<GameStage>('selection');
+  const [paymentProcessing, setPaymentProcessing] = useState(false);
+  const [selectedNumber, setSelectedNumber] = useState<number | null>(null);
   const [rolledNumber, setRolledNumber] = useState<number | null>(null);
-  const [results, setResults] = useState<RollResult[]>([]);
-  const [totalWins, setTotalWins] = useState(0);
-  
-  // Check if we have items from the cart
-  useEffect(() => {
-    // Check if we received any items from the location state
-    if (location.state?.items) {
-      setSelectedItems(location.state.items);
-      setGameState('payment');
-    }
-  }, [location.state]);
-  
-  // Handle item selection
+  const [isWinner, setIsWinner] = useState(false);
+  const [currentRollIndex, setCurrentRollIndex] = useState(0);
+  const [gameResults, setGameResults] = useState<{win: boolean, selected: number, rolled: number}[]>([]);
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [isRolling, setIsRolling] = useState(false);
+  const [showStaffDialog, setShowStaffDialog] = useState(false);
+
   const handleItemSelect = (item: GameItem) => {
-    // Check if item already exists
-    const exists = selectedItems.some(i => i.id === item.id);
-    
-    if (exists) {
+    if (selectedItems.some(i => i.id === item.id)) {
       setSelectedItems(selectedItems.filter(i => i.id !== item.id));
     } else {
       setSelectedItems([...selectedItems, item]);
     }
   };
-  
-  // Handle multiple selection confirmation
-  const handleItemSelectionComplete = () => {
-    if (selectedItems.length === 0) {
-      toast.error("Please select at least one item to play");
-      return;
-    }
-    setGameState('payment');
-  };
-  
-  // Handle payment process
+
   const handlePayment = () => {
-    const totalAmount = selectedItems.length * 25;
-    toast.success(`Payment of ₹${totalAmount} successful!`);
-    setGameState('select_number');
+    setPaymentProcessing(true);
+    // Simulate payment process
+    setTimeout(() => {
+      setPaymentProcessing(false);
+      setStage('roll');
+    }, 1500);
   };
-  
-  // Handle number selection
-  const handleNumberSelect = (number: number) => {
-    setSelectedNumber(number);
-    setGameState('roll_dice');
+
+  const handleNumberSelect = (num: number) => {
+    setSelectedNumber(num);
   };
-  
-  // Handle the dice roll (staff input)
-  const handleDiceRoll = (rolledValue: number) => {
-    setRolledNumber(rolledValue);
+
+  const handleRollDice = () => {
+    if (selectedNumber === null) return;
     
-    // Check if the user won
-    const hasWon = rolledValue === selectedNumber;
+    setIsRolling(true);
+    // Show staff dialog after animation
+    setTimeout(() => {
+      setIsRolling(false);
+      setShowStaffDialog(true);
+    }, 2000);
+  };
+
+  const handleStaffInput = (rolledNum: number) => {
+    setRolledNumber(rolledNum);
+    setShowStaffDialog(false);
     
-    // Store the result
-    const currentItem = selectedItems[currentItemIndex];
-    setResults([
-      ...results, 
-      {
-        item: currentItem,
-        selected: selectedNumber!, // Non-null assertion since we know it's selected
-        rolled: rolledValue,
-        win: hasWon
-      }
-    ]);
+    const win = selectedNumber === rolledNum;
+    setIsWinner(win);
     
-    if (hasWon) {
-      setTotalWins(totalWins + 1);
-      toast.success("Congratulations! You won a free coffee!");
-      // Generate coupon for the win
-      applyCoupon("WINNERSDICE");
-    } else {
-      toast.info("Better luck next time!");
+    // Add result to game results array
+    setGameResults([...gameResults, {
+      win,
+      selected: selectedNumber!,
+      rolled: rolledNum
+    }]);
+    
+    if (win) {
+      // Add coupon if won
+      applyCoupon('WINNERSDICE');
+      setShowConfetti(true);
+      setTimeout(() => setShowConfetti(false), 5000);
     }
-    
-    // Check if we have more items to roll for
-    if (currentItemIndex < selectedItems.length - 1) {
-      setGameState('multiple_rolls');
-    } else {
-      setGameState('result');
-    }
+
+    setStage('result');
   };
-  
-  // Continue to next roll
+
   const handleNextRoll = () => {
-    setCurrentItemIndex(currentItemIndex + 1);
-    setSelectedNumber(null);
-    setRolledNumber(null);
-    setGameState('select_number');
+    const nextIndex = currentRollIndex + 1;
+    if (nextIndex < selectedItems.length) {
+      setCurrentRollIndex(nextIndex);
+      setSelectedNumber(null);
+      setRolledNumber(null);
+      setStage('roll');
+    } else {
+      // Game complete
+      navigate('/order-success');
+    }
   };
-  
-  // Reset the game
-  const resetGame = () => {
-    setSelectedNumber(null);
-    setSelectedItems([]);
-    setCurrentItemIndex(0);
-    setRolledNumber(null);
-    setResults([]);
-    setTotalWins(0);
-    setGameState('item_selection');
-  };
-  
+
+  const totalAmount = selectedItems.length * 25;
+  const remainingRolls = selectedItems.length - currentRollIndex - 1;
+
   return (
     <div className="flex flex-col min-h-screen bg-coasters-cream">
       <Header />
       
       <main className="flex-grow p-4 pb-20">
-        <div className="mb-6">
-          <h1 className="font-hackney text-3xl text-coasters-green mb-2">DICE GAME</h1>
-          <p className="text-coasters-green/80">Select items, play dice, and win free coffee!</p>
-        </div>
-        
-        {/* Game progress indicator based on current state */}
-        <ProgressIndicator gameState={gameState} />
-        
-        {/* Different game sections based on current state */}
-        {gameState === 'item_selection' && (
-          <ItemSelectionSection 
-            gameItems={gameItems}
-            selectedItems={selectedItems}
-            onItemSelect={handleItemSelect}
-            onComplete={handleItemSelectionComplete}
-            onBack={() => navigate('/')}
-          />
+        {/* Stage 1: Item Selection */}
+        {stage === 'selection' && (
+          <>
+            <div className="text-center mb-6">
+              <div className="flex justify-center mb-2">
+                <Dices className="h-10 w-10 text-coasters-green" />
+              </div>
+              <h1 className="text-2xl font-hackney text-coasters-green mb-2">PLAY DICE & WIN</h1>
+              <p className="text-gray-600">Select items to play the dice game!</p>
+            </div>
+            
+            <ItemSelector items={gameItems} onSelect={handleItemSelect} />
+            
+            <div className="mt-6 bg-white p-4 rounded-lg border-2 border-coasters-gold shadow">
+              <h2 className="font-hackney text-coasters-green text-lg">GAME SUMMARY</h2>
+              <div className="mt-2">
+                <p>Selected Items: <span className="font-bold">{selectedItems.length}</span></p>
+                <p>Dice Rolls: <span className="font-bold">{selectedItems.length}</span></p>
+                <p className="font-bold mt-2">Total: ₹{totalAmount}</p>
+              </div>
+              
+              <div className="mt-4">
+                <Button 
+                  onClick={() => setStage('payment')} 
+                  disabled={selectedItems.length === 0}
+                  className="w-full"
+                  variant="gold"
+                >
+                  Proceed <ArrowRight className="h-5 w-5 ml-1" />
+                </Button>
+              </div>
+            </div>
+          </>
         )}
         
-        {gameState === 'payment' && (
-          <PaymentSection
-            selectedItems={selectedItems}
-            onPayment={handlePayment}
-            onBack={() => setGameState('item_selection')}
-          />
+        {/* Stage 2: Payment */}
+        {stage === 'payment' && (
+          <div className="text-center">
+            <h1 className="text-2xl font-hackney text-coasters-green mb-6">PAYMENT</h1>
+            
+            <div className="bg-white rounded-lg border-2 border-coasters-gold shadow p-4 mb-6">
+              <h2 className="font-hackney text-coasters-green text-lg mb-2">ORDER SUMMARY</h2>
+              <div className="space-y-2">
+                {selectedItems.map((item, idx) => (
+                  <div key={idx} className="flex justify-between">
+                    <span>{item.name}</span>
+                    <span>₹{item.price}</span>
+                  </div>
+                ))}
+                <div className="border-t pt-2 font-bold flex justify-between">
+                  <span>Total</span>
+                  <span>₹{totalAmount}</span>
+                </div>
+              </div>
+              
+              <div className="mt-4 p-3 bg-coasters-cream rounded-md">
+                <p className="text-sm font-medium text-coasters-green">
+                  You'll get to play {selectedItems.length} dice roll{selectedItems.length > 1 ? 's' : ''}!
+                </p>
+              </div>
+            </div>
+            
+            <Button 
+              onClick={handlePayment}
+              disabled={paymentProcessing}
+              variant="gold" 
+              className="w-full"
+            >
+              {paymentProcessing ? 'Processing...' : 'Pay Now'}
+            </Button>
+            
+            {paymentProcessing && (
+              <p className="mt-4 text-coasters-green">
+                Processing payment...
+              </p>
+            )}
+          </div>
         )}
         
-        {gameState === 'select_number' && (
-          <NumberSelectionSection
-            selectedItems={selectedItems}
-            currentItemIndex={currentItemIndex}
-            onNumberSelect={handleNumberSelect}
-          />
-        )}
-        
-        {gameState === 'roll_dice' && (
-          <DiceRollSection
-            selectedItems={selectedItems}
-            currentItemIndex={currentItemIndex}
+        {/* Stage 3: Roll Dice */}
+        {stage === 'roll' && (
+          <DiceGameRoll
+            currentItem={selectedItems[currentRollIndex]}
             selectedNumber={selectedNumber}
-            onDiceRoll={handleDiceRoll}
+            onSelectNumber={handleNumberSelect}
+            onRollDice={handleRollDice}
+            isRolling={isRolling}
+            totalRolls={selectedItems.length}
+            currentRoll={currentRollIndex + 1}
           />
         )}
         
-        {gameState === 'multiple_rolls' && (
-          <MultipleRollsSection
-            currentItemIndex={currentItemIndex}
-            selectedItems={selectedItems}
-            results={results}
+        {/* Stage 4: Result */}
+        {stage === 'result' && rolledNumber !== null && selectedNumber !== null && (
+          <DiceGameResult
+            isWinner={isWinner}
+            selectedNumber={selectedNumber}
+            rolledNumber={rolledNumber!}
+            showConfetti={showConfetti}
             onNextRoll={handleNextRoll}
-          />
-        )}
-        
-        {gameState === 'result' && (
-          <ResultsSection
-            selectedItems={selectedItems}
-            results={results}
-            totalWins={totalWins}
-            onResetGame={resetGame}
+            hasMoreRolls={remainingRolls > 0}
+            currentRoll={currentRollIndex + 1}
+            totalRolls={selectedItems.length}
           />
         )}
       </main>
       
-      {/* Display the number of dice rolls at the bottom */}
-      {(gameState === 'select_number' || gameState === 'roll_dice') && (
-        <FooterIndicator 
-          currentItemIndex={currentItemIndex} 
-          totalItems={selectedItems.length} 
-        />
-      )}
+      {/* Staff Input Dialog */}
+      <Dialog open={showStaffDialog} onOpenChange={setShowStaffDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center font-hackney text-coasters-green">STAFF INPUT</DialogTitle>
+          </DialogHeader>
+          
+          <div className="py-4">
+            <p className="mb-4 text-center">Enter the number that was rolled on the physical dice:</p>
+            
+            <div className="grid grid-cols-3 gap-3">
+              {[1, 2, 3, 4, 5, 6].map(num => (
+                <Button
+                  key={num}
+                  onClick={() => handleStaffInput(num)}
+                  variant="outline"
+                  className="h-12 text-xl font-bold"
+                >
+                  {num}
+                </Button>
+              ))}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
