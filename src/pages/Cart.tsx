@@ -9,7 +9,7 @@ import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Check, X } from 'lucide-react';
+import { Check, X, Dices } from 'lucide-react';
 
 export default function Cart() {
   const { items, applyCoupon, couponCode, removeCoupon, clearCart, getTotal } = useCart();
@@ -27,6 +27,10 @@ export default function Cart() {
     // In a real app, we would handle payment processing here
     clearCart();
     navigate('/order-success');
+  };
+
+  const handlePlayDice = () => {
+    navigate('/dice-game');
   };
   
   if (items.length === 0) {
@@ -99,6 +103,28 @@ export default function Cart() {
               </Button>
             </div>
           )}
+          
+          <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
+        </div>
+        
+        {/* Play Dice Game CTA */}
+        <div className="vintage-card mb-6 bg-coasters-green p-4 relative overflow-hidden">
+          <div className="zigzag-divider absolute top-0 left-0 right-0"></div>
+          
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="font-hackney text-coasters-gold text-xl mb-2">PLAY DICE & WIN FREE COFFEE!</h3>
+              <p className="text-white text-sm">Play our dice game for ₹25 per roll and win free coffee</p>
+            </div>
+            <Button 
+              onClick={handlePlayDice}
+              variant="gold"
+              className="flex items-center gap-2"
+            >
+              <Dices className="h-5 w-5" />
+              Play Dice
+            </Button>
+          </div>
           
           <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
         </div>
