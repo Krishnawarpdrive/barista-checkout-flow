@@ -7,7 +7,7 @@ import CoffeeCard from '@/components/CoffeeCard';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Dices } from 'lucide-react';
 
 // Mock data
 const coffeeProducts = [
@@ -75,6 +75,31 @@ export default function Home() {
               ? `HELLO ${user?.name.toUpperCase()}, LET'S ORDER HAPPINESS!` 
               : "DISCOVER OUR COFFEE"}
           </h2>
+          
+          {/* Dice Game Banner */}
+          <div className="mb-6 bg-coasters-gold rounded-lg p-4 border-2 border-coasters-green/30 shadow-md relative overflow-hidden animate-fade-in">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-hackney text-xl text-coasters-green mb-1">TRY YOUR LUCK!</h3>
+                <p className="text-coasters-green/80 text-sm mb-2">Play our dice game and win free coffee</p>
+                <Button 
+                  onClick={() => navigate('/dice-game')}
+                  variant="secondary"
+                  size="sm"
+                  className="group"
+                >
+                  <Dices className="mr-1 group-hover:animate-bounce-subtle" />
+                  Play Now
+                </Button>
+              </div>
+              <div className="hidden sm:block">
+                <Dices size={60} className="text-coasters-green opacity-80 animate-bounce-subtle" />
+              </div>
+            </div>
+            
+            <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -translate-y-20 translate-x-20"></div>
+            <div className="absolute bottom-0 left-0 w-24 h-24 bg-white/10 rounded-full translate-y-12 -translate-x-12"></div>
+          </div>
           
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
             {coffeeProducts.map((coffee) => (
