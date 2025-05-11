@@ -7,27 +7,21 @@ import CartItemCard from '@/components/CartItemCard';
 import PaymentSummary from '@/components/PaymentSummary';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Check, X, Dices } from 'lucide-react';
-import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import CouponDrawer from '@/components/CouponDrawer';
 
+// New component imports
+import EmptyCartState from '@/components/cart/EmptyCartState';
+import CartCouponSection from '@/components/cart/CartCouponSection';
+import CartDiceGameCta from '@/components/cart/CartDiceGameCta';
+import CartLoginDrawer from '@/components/cart/CartLoginDrawer';
+import CartCheckoutFooter from '@/components/cart/CartCheckoutFooter';
+
 export default function Cart() {
-  const { items, applyCoupon, couponCode, removeCoupon, clearCart, getTotal } = useCart();
+  const { items, clearCart } = useCart();
   const { isAuthenticated } = useAuth();
-  const [coupon, setCoupon] = useState('');
   const [showLoginDrawer, setShowLoginDrawer] = useState(false);
   const [showCouponDrawer, setShowCouponDrawer] = useState(false);
   const navigate = useNavigate();
-
-  const handleApplyCoupon = () => {
-    if (coupon) {
-      applyCoupon(coupon);
-      setCoupon('');
-    }
-  };
   
   const handleProceedToPayment = () => {
     if (isAuthenticated) {
@@ -48,11 +42,6 @@ export default function Cart() {
     handleCheckout();
   };
   
-  const handleLoginWithWhatsApp = () => {
-    // Navigate to login page
-    navigate('/login');
-  };
-  
   const handlePlayDice = () => {
     // Navigate to dice game with cart items for pricing
     navigate('/dice-game', { state: { items } });
@@ -63,19 +52,7 @@ export default function Cart() {
       <div className="flex flex-col min-h-screen">
         <Header />
         <LocationBar />
-        
-        <div className="flex-grow flex flex-col items-center justify-center p-8 bg-coasters-cream">
-          <div className="vintage-card p-8 text-center">
-            <h2 className="text-2xl font-hackney text-coasters-green mb-4">Your cart is empty</h2>
-            <p className="text-gray-600 mb-8">Add some coffee to get started!</p>
-            <Button 
-              onClick={() => navigate('/')}
-              className="bg-coasters-orange hover:bg-coasters-orange/90 font-hackney"
-            >
-              Go to Menu
-            </Button>
-          </div>
-        </div>
+        <EmptyCartState />
       </div>
     );
   }
@@ -95,131 +72,25 @@ export default function Cart() {
         </div>
         
         {/* Coupon Section */}
-        <div className="vintage-card mb-6 relative overflow-hidden">
-          <div className="zigzag-divider absolute top-0 left-0 right-0"></div>
-          
-          {couponCode ? (
-            <Alert className="bg-green-50 border-green-200 text-green-800 mt-4">
-              <div className="flex justify-between items-center w-full">
-                <div className="flex items-center gap-2">
-                  <Check className="h-4 w-4" />
-                  <AlertDescription>
-                    <strong>Offer applied successfully!</strong>
-                  </AlertDescription>
-                </div>
-                <button onClick={removeCoupon} className="text-gray-500">
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-            </Alert>
-          ) : (
-            <div className="flex gap-2 mt-4">
-              <Button
-                onClick={() => setShowCouponDrawer(true)}
-                className="bg-coasters-orange hover:bg-coasters-orange/90 whitespace-nowrap font-hackney flex-grow"
-              >
-                Browse Available Coupons
-              </Button>
-            </div>
-          )}
-          
-          <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
-        </div>
+        <CartCouponSection onOpenCouponDrawer={() => setShowCouponDrawer(true)} />
         
         {/* Play Dice Game CTA */}
-        <div className="vintage-card mb-6 relative overflow-hidden">
-          <div className="zigzag-divider absolute top-0 left-0 right-0"></div>
-          
-          <div className="flex items-center bg-coasters-green/10 p-3 rounded-md">
-            <div className="mr-4">
-              <Dices className="h-12 w-12 text-coasters-orange animate-pulse" />
-            </div>
-            <div className="flex-grow">
-              <h3 className="text-lg font-hackney text-coasters-green">PLAY DICE GAME</h3>
-              <p className="text-sm text-gray-600">Roll the dice and win free coffee!</p>
-            </div>
-            <Button 
-              onClick={handlePlayDice}
-              className="bg-coasters-green hover:bg-coasters-green/90 whitespace-nowrap font-hackney"
-            >
-              Play Now
-            </Button>
-          </div>
-          
-          <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
-        </div>
+        <CartDiceGameCta onPlayDice={handlePlayDice} />
         
         <div className="geometric-pattern h-4 w-full mb-6"></div>
         
         <PaymentSummary />
       </main>
       
-      <div className="fixed bottom-0 left-0 right-0 bg-coasters-green p-4 flex items-center justify-between">
-        <div className="text-white">
-          <p className="text-sm">Total Price</p>
-          <p className="text-xl font-bold">₹{getTotal()}</p>
-        </div>
-        
-        <Button 
-          onClick={handleProceedToPayment}
-          className="bg-coasters-gold hover:bg-coasters-gold/90 text-black font-hackney px-6 py-5"
-        >
-          Proceed to Payment
-        </Button>
-      </div>
+      {/* Checkout Footer */}
+      <CartCheckoutFooter onProceed={handleProceedToPayment} />
       
       {/* Login Options Drawer */}
-      <Drawer open={showLoginDrawer} onClose={() => setShowLoginDrawer(false)}>
-        <DrawerContent>
-          <DrawerHeader>
-            <DrawerTitle className="font-hackney text-coasters-green text-2xl">LOGIN OPTIONS</DrawerTitle>
-          </DrawerHeader>
-          
-          <div className="px-4 pb-2">
-            <p className="text-gray-500 mb-6">Choose how you'd like to continue with your order</p>
-            
-            <div className="space-y-4">
-              <Button 
-                onClick={handleLoginWithWhatsApp}
-                className="w-full bg-green-500 hover:bg-green-600 h-14 text-lg"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                  <path d="M3 21l1.65-3.8a9 9 0 1 1 3.4 2.9L3 21"/>
-                  <path d="M9 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Z"/>
-                  <path d="M14 10a.5.5 0 0 0 1 0V9a.5.5 0 0 0-1 0v1Z"/>
-                  <path d="M9 14a.5.5 0 0 0 .5.5c.667 0 1.333-.083 2-.25.667-.167 1.333-.417 2-.75a.5.5 0 0 0-.5-.866 9.11 9.11 0 0 1-1.75.666c-.583.15-1.167.217-1.75.2a.5.5 0 0 0-.5.5Z"/>
-                </svg>
-                Login with WhatsApp
-              </Button>
-              
-              <div className="relative py-4">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-300"></div>
-                </div>
-                <div className="relative flex justify-center">
-                  <span className="bg-white px-2 text-sm text-gray-400">
-                    OR
-                  </span>
-                </div>
-              </div>
-              
-              <Button 
-                onClick={handleGuestCheckout}
-                variant="outline" 
-                className="w-full border-2 h-14 text-lg"
-              >
-                Continue as Guest
-              </Button>
-            </div>
-          </div>
-          
-          <DrawerFooter>
-            <Button variant="outline" onClick={() => setShowLoginDrawer(false)}>
-              Cancel
-            </Button>
-          </DrawerFooter>
-        </DrawerContent>
-      </Drawer>
+      <CartLoginDrawer 
+        open={showLoginDrawer} 
+        onClose={() => setShowLoginDrawer(false)}
+        onGuestCheckout={handleGuestCheckout}
+      />
       
       {/* Coupon Drawer */}
       <CouponDrawer 
