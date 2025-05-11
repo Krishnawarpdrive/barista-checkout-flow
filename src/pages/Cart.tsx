@@ -3,18 +3,18 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
 import LocationBar from '@/components/LocationBar';
-import CartItemCard from '@/components/CartItemCard';
 import PaymentSummary from '@/components/PaymentSummary';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import CouponDrawer from '@/components/CouponDrawer';
 
-// New component imports
+// Component imports
 import EmptyCartState from '@/components/cart/EmptyCartState';
 import CartCouponSection from '@/components/cart/CartCouponSection';
 import CartDiceGameCta from '@/components/cart/CartDiceGameCta';
 import CartLoginDrawer from '@/components/cart/CartLoginDrawer';
 import CartCheckoutFooter from '@/components/cart/CartCheckoutFooter';
+import CartItemsSection from '@/components/cart/CartItemsSection';
 
 export default function Cart() {
   const { items, clearCart } = useCart();
@@ -63,13 +63,7 @@ export default function Cart() {
       <LocationBar />
       
       <main className="flex-grow p-4 pb-24">
-        <h2 className="text-2xl font-hackney text-coasters-green mb-6">YOUR CART</h2>
-        
-        <div className="space-y-4 mb-6">
-          {items.map((item) => (
-            <CartItemCard key={item.id} item={item} />
-          ))}
-        </div>
+        <CartItemsSection />
         
         {/* Coupon Section */}
         <CartCouponSection onOpenCouponDrawer={() => setShowCouponDrawer(true)} />
