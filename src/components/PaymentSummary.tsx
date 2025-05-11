@@ -5,31 +5,31 @@ export default function PaymentSummary() {
   const { getSubtotal, getTax, getTotal, discount } = useCart();
   
   return (
-    <div className="bg-white rounded-lg p-4">
-      <h2 className="text-xl font-bold mb-4">Payment Summary</h2>
+    <div className="bg-white rounded-lg p-4 border-2 border-coasters-gold shadow-md">
+      <h2 className="text-xl font-hackney text-coasters-green mb-4 tracking-wide">PAYMENT SUMMARY</h2>
       
-      <div className="space-y-2">
+      <div className="space-y-3">
         <div className="flex justify-between">
-          <span>Order Total</span>
-          <span>₹{getSubtotal()}</span>
+          <span className="font-medium">Order Total</span>
+          <span className="font-bold">₹{getSubtotal()}</span>
         </div>
         
         {discount > 0 && (
-          <div className="flex justify-between text-green-600">
+          <div className="flex justify-between text-coasters-orange font-medium">
             <span>Discount</span>
             <span>-₹{discount}</span>
           </div>
         )}
         
         <div className="flex justify-between">
-          <span>GST</span>
+          <span className="font-medium">GST</span>
           <span>₹{getTax()}</span>
         </div>
         
-        <div className="border-t border-gray-200 pt-2 mt-2">
+        <div className="border-t-2 border-dashed border-coasters-green/30 pt-3 mt-3">
           <div className="flex justify-between font-bold">
-            <span>Total Payment</span>
-            <span>₹{getTotal()}</span>
+            <span className="text-coasters-green">Total Payment</span>
+            <span className="text-coasters-green text-lg">₹{getTotal()}</span>
           </div>
         </div>
       </div>
