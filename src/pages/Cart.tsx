@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -9,7 +10,7 @@ import { useCart } from '@/context/CartContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Check, X } from 'lucide-react';
+import { Check, X, Dices } from 'lucide-react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import CouponDrawer from '@/components/CouponDrawer';
 
@@ -50,6 +51,11 @@ export default function Cart() {
   const handleLoginWithWhatsApp = () => {
     // Navigate to login page
     navigate('/login');
+  };
+  
+  const handlePlayDice = () => {
+    // Navigate to dice game with cart items for pricing
+    navigate('/dice-game', { state: { items } });
   };
   
   if (items.length === 0) {
@@ -116,6 +122,29 @@ export default function Cart() {
               </Button>
             </div>
           )}
+          
+          <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
+        </div>
+        
+        {/* Play Dice Game CTA */}
+        <div className="vintage-card mb-6 relative overflow-hidden">
+          <div className="zigzag-divider absolute top-0 left-0 right-0"></div>
+          
+          <div className="flex items-center bg-coasters-green/10 p-3 rounded-md">
+            <div className="mr-4">
+              <Dices className="h-12 w-12 text-coasters-orange animate-pulse" />
+            </div>
+            <div className="flex-grow">
+              <h3 className="text-lg font-hackney text-coasters-green">PLAY DICE GAME</h3>
+              <p className="text-sm text-gray-600">Roll the dice and win free coffee!</p>
+            </div>
+            <Button 
+              onClick={handlePlayDice}
+              className="bg-coasters-green hover:bg-coasters-green/90 whitespace-nowrap font-hackney"
+            >
+              Play Now
+            </Button>
+          </div>
           
           <div className="zigzag-divider-reverse absolute bottom-0 left-0 right-0"></div>
         </div>
